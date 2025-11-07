@@ -4,7 +4,7 @@ class BingoCage {
         this.minInput = document.getElementById('minNumber');
         this.maxInput = document.getElementById('maxNumber');
         this.ballsContainer = document.getElementById('ballsContainer');
-        this.cageContainer = document.querySelector('.cage-container');
+        this.sphereContainer = document.querySelector('.sphere-container');
         this.resultDiv = document.getElementById('result');
         this.isAnimating = false;
         this.balls = [];
@@ -220,8 +220,8 @@ class BingoCage {
             }, 1000);
         }
 
-        // Stop cage rotation
-        this.cageContainer.classList.remove('rotating');
+        // Stop sphere rotation
+        this.sphereContainer.classList.remove('rotating');
     }
 
     startPicking() {
@@ -256,15 +256,15 @@ class BingoCage {
         // Create balls
         this.createBalls(min, max);
 
-        // Start cage rotation
-        this.cageContainer.classList.add('rotating');
+        // Start sphere rotation
+        this.sphereContainer.classList.add('rotating');
 
         // Animate balls for 6 seconds
         this.animateBalls(6000);
 
         // Remove rotation class after animation
         setTimeout(() => {
-            this.cageContainer.classList.remove('rotating');
+            this.sphereContainer.classList.remove('rotating');
         }, 6000);
     }
 }
