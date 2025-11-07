@@ -92,37 +92,109 @@ h1 {
 
 .bingo-cage {
     position: relative;
-    perspective: 1000px;
-    margin: 40px auto;
+    perspective: 1500px;
+    margin: 40px auto 120px;
 }
 
 .cage-container {
     position: relative;
-    width: 400px;
-    height: 400px;
+    width: 450px;
+    height: 450px;
     margin: 0 auto;
     transform-style: preserve-3d;
 }
 
-.cage-front,
-.cage-back {
+/* 3D Drum Structure */
+.drum-3d {
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 8px solid #333;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+    transform-style: preserve-3d;
     pointer-events: none;
 }
 
-.cage-front {
-    z-index: 10;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+.drum-front,
+.drum-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 10px solid #8B4513;
+    background: radial-gradient(circle at 35% 35%, rgba(139, 69, 19, 0.3), rgba(101, 67, 33, 0.5));
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
-.cage-back {
+.drum-front {
+    z-index: 10;
+    transform: translateZ(100px);
+}
+
+.drum-back {
     z-index: 1;
-    background: radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.3));
+    transform: translateZ(-100px);
+    background: radial-gradient(circle at 65% 65%, rgba(101, 67, 33, 0.5), rgba(70, 50, 30, 0.7));
+}
+
+.drum-glass {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), rgba(135, 206, 250, 0.1));
+    border: 5px solid rgba(100, 149, 237, 0.3);
+    z-index: 15;
+    transform: translateZ(105px);
+    box-shadow:
+        inset 0 0 30px rgba(255, 255, 255, 0.1),
+        0 0 20px rgba(100, 149, 237, 0.2);
+    pointer-events: none;
+}
+
+.drum-side-left,
+.drum-side-right {
+    position: absolute;
+    width: 200px;
+    height: 100%;
+    background: linear-gradient(to right,
+        rgba(139, 69, 19, 0.9),
+        rgba(160, 82, 45, 0.7),
+        rgba(139, 69, 19, 0.9));
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+.drum-side-left {
+    left: 0;
+    transform: rotateY(-90deg) translateZ(125px);
+    border-radius: 0 200px 200px 0;
+}
+
+.drum-side-right {
+    right: 0;
+    transform: rotateY(90deg) translateZ(125px);
+    border-radius: 200px 0 0 200px;
+}
+
+.drum-top,
+.drum-bottom {
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(to bottom,
+        rgba(139, 69, 19, 0.95),
+        rgba(101, 67, 33, 0.85));
+    border-radius: 225px 225px 0 0;
+    box-shadow: inset 0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.drum-top {
+    top: 0;
+    transform: rotateX(90deg) translateZ(225px);
+}
+
+.drum-bottom {
+    bottom: 0;
+    transform: rotateX(-90deg) translateZ(225px);
+    border-radius: 0 0 225px 225px;
 }
 
 .balls-container {
@@ -132,6 +204,68 @@ h1 {
     z-index: 5;
     overflow: hidden;
     border-radius: 50%;
+}
+
+/* Chute System */
+.chute {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    pointer-events: none;
+}
+
+.chute-opening {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #333, #1a1a1a);
+    border: 4px solid #8B4513;
+    box-shadow:
+        inset 0 5px 15px rgba(0, 0, 0, 0.8),
+        0 2px 10px rgba(0, 0, 0, 0.5);
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.chute-tube {
+    position: absolute;
+    width: 70px;
+    height: 150px;
+    background: linear-gradient(to bottom,
+        rgba(192, 192, 192, 0.9),
+        rgba(169, 169, 169, 0.95),
+        rgba(128, 128, 128, 0.9));
+    border-left: 3px solid rgba(105, 105, 105, 0.8);
+    border-right: 3px solid rgba(105, 105, 105, 0.8);
+    box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.3),
+        -5px 0 15px rgba(0, 0, 0, 0.2),
+        5px 0 15px rgba(0, 0, 0, 0.2);
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
+}
+
+.chute-tray {
+    position: absolute;
+    width: 120px;
+    height: 50px;
+    background: linear-gradient(to bottom,
+        rgba(192, 192, 192, 0.95),
+        rgba(169, 169, 169, 0.9));
+    border: 3px solid rgba(105, 105, 105, 0.9);
+    border-radius: 0 0 15px 15px;
+    box-shadow:
+        inset 0 -5px 10px rgba(255, 255, 255, 0.3),
+        0 5px 20px rgba(0, 0, 0, 0.4);
+    top: 160px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .ball {
@@ -162,17 +296,34 @@ h1 {
 }
 
 .ball.winning {
-    animation: pulse 0.5s ease-in-out;
     z-index: 100;
-    transform: scale(1.5) !important;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1.5);
+.ball.sliding {
+    animation: slideDownChute 2s ease-in forwards;
+    z-index: 150;
+}
+
+@keyframes slideDownChute {
+    0% {
+        transform: scale(1) translateY(0) translateX(0);
+        opacity: 1;
     }
-    50% {
-        transform: scale(1.7);
+    20% {
+        transform: scale(1.2) translateY(20px) translateX(0);
+    }
+    40% {
+        transform: scale(1) translateY(180px) translateX(-5px);
+    }
+    60% {
+        transform: scale(1) translateY(280px) translateX(5px);
+    }
+    80% {
+        transform: scale(1) translateY(380px) translateX(-3px);
+    }
+    100% {
+        transform: scale(1.3) translateY(420px) translateX(0);
+        opacity: 1;
     }
 }
 
@@ -247,8 +398,8 @@ h1 {
     }
 
     .cage-container {
-        width: 300px;
-        height: 300px;
+        width: 320px;
+        height: 320px;
     }
 
     .ball {
@@ -265,5 +416,37 @@ h1 {
     .input-group input {
         width: 100%;
         max-width: 250px;
+    }
+
+    .chute-tube {
+        width: 60px;
+        height: 120px;
+    }
+
+    .chute-tray {
+        width: 100px;
+        height: 40px;
+        top: 130px;
+    }
+
+    @keyframes slideDownChute {
+        0% {
+            transform: scale(1) translateY(0) translateX(0);
+        }
+        20% {
+            transform: scale(1.2) translateY(15px) translateX(0);
+        }
+        40% {
+            transform: scale(1) translateY(140px) translateX(-5px);
+        }
+        60% {
+            transform: scale(1) translateY(220px) translateX(5px);
+        }
+        80% {
+            transform: scale(1) translateY(300px) translateX(-3px);
+        }
+        100% {
+            transform: scale(1.3) translateY(330px) translateX(0);
+        }
     }
 }

@@ -34,9 +34,9 @@ class BingoCage {
 
             // Random initial position within the cage
             const angle = Math.random() * 360;
-            const radius = Math.random() * 120 + 50; // Random distance from center
-            const x = Math.cos(angle * Math.PI / 180) * radius + 175; // Center is at 200px
-            const y = Math.sin(angle * Math.PI / 180) * radius + 175;
+            const radius = Math.random() * 140 + 50; // Random distance from center
+            const x = Math.cos(angle * Math.PI / 180) * radius + 200; // Center is at 225px
+            const y = Math.sin(angle * Math.PI / 180) * radius + 200;
 
             ball.style.left = x + 'px';
             ball.style.top = y + 'px';
@@ -55,9 +55,9 @@ class BingoCage {
 
     animateBalls(duration = 6000) {
         const startTime = Date.now();
-        const centerX = 200;
-        const centerY = 200;
-        const maxRadius = 150; // Keep balls within the cage
+        const centerX = 225;
+        const centerY = 225;
+        const maxRadius = 175; // Keep balls within the cage
 
         const animate = () => {
             const elapsed = Date.now() - startTime;
@@ -180,32 +180,48 @@ class BingoCage {
         const max = parseInt(this.maxInput.value);
         const winningNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
-        // Find and highlight the winning ball
+        // Find the winning ball
         const winningBall = this.balls.find(b => b.number === winningNumber);
         if (winningBall) {
             winningBall.element.classList.add('winning');
 
-            // Center the winning ball
+            // Move winning ball to the bottom center (chute opening)
             setTimeout(() => {
-                winningBall.element.style.left = '175px';
-                winningBall.element.style.top = '175px';
-                winningBall.element.style.transition = 'all 0.5s ease-out';
+                winningBall.element.style.transition = 'all 1s ease-out';
+                winningBall.element.style.left = '200px';
+                winningBall.element.style.top = '380px';
             }, 100);
-        }
 
-        // Display result
-        this.resultDiv.textContent = `Winning Number: ${winningNumber}`;
-        this.resultDiv.classList.add('show');
+            // After moving to chute opening, start sliding animation
+            setTimeout(() => {
+                winningBall.element.style.transition = 'none';
+                winningBall.element.classList.add('sliding');
+
+                // Display result during slide
+                this.resultDiv.textContent = `Winning Number: ${winningNumber}`;
+                this.resultDiv.classList.add('show');
+            }, 1200);
+
+            // Re-enable button after slide completes
+            setTimeout(() => {
+                this.isAnimating = false;
+                this.startButton.disabled = false;
+                this.startButton.textContent = 'Pick a Number!';
+            }, 3500);
+        } else {
+            // Fallback if ball not found
+            this.resultDiv.textContent = `Winning Number: ${winningNumber}`;
+            this.resultDiv.classList.add('show');
+
+            setTimeout(() => {
+                this.isAnimating = false;
+                this.startButton.disabled = false;
+                this.startButton.textContent = 'Pick a Number!';
+            }, 1000);
+        }
 
         // Stop cage rotation
         this.cageContainer.classList.remove('rotating');
-
-        // Re-enable button
-        setTimeout(() => {
-            this.isAnimating = false;
-            this.startButton.disabled = false;
-            this.startButton.textContent = 'Pick a Number!';
-        }, 1000);
     }
 
     startPicking() {
