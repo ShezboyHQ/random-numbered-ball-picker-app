@@ -65,47 +65,49 @@ class BingoCage {
 
             if (progress < 1 && this.isAnimating) {
                 this.balls.forEach(ball => {
-                    // Update position
-                    ball.x += ball.vx;
-                    ball.y += ball.vy;
-
-                    // Calculate distance from center
+                    // Simulate air currents with circular swirling motion
+                    const time = elapsed / 1000;
                     const dx = ball.x - centerX;
                     const dy = ball.y - centerY;
                     const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
 
-                    // Bounce off edges (circular boundary)
-                    if (distanceFromCenter > maxRadius) {
-                        // Normalize the distance vector
-                        const angle = Math.atan2(dy, dx);
+                    // Create swirling air effect
+                    const swirl = Math.sin(time * 2 + ball.number * 0.5) * 0.8;
+                    const airForceX = -dy / distanceFromCenter * swirl;
+                    const airForceY = dx / distanceFromCenter * swirl;
 
-                        // Place ball back on the edge
+                    // Add upward air blast at random intervals
+                    const upwardForce = Math.sin(time * 3 + ball.number) * 0.3;
+
+                    // Apply air forces
+                    ball.vx += airForceX + (Math.random() - 0.5) * 1.2;
+                    ball.vy += airForceY + upwardForce + (Math.random() - 0.5) * 1.2;
+
+                    // Update position
+                    ball.x += ball.vx;
+                    ball.y += ball.vy;
+
+                    // Bounce off edges (circular boundary) - softer bounce for light plastic
+                    if (distanceFromCenter > maxRadius) {
+                        const angle = Math.atan2(dy, dx);
                         ball.x = centerX + Math.cos(angle) * maxRadius;
                         ball.y = centerY + Math.sin(angle) * maxRadius;
 
-                        // Reflect velocity
+                        // Reflect velocity with energy loss (light plastic)
                         const normalX = dx / distanceFromCenter;
                         const normalY = dy / distanceFromCenter;
                         const dotProduct = ball.vx * normalX + ball.vy * normalY;
 
-                        ball.vx = ball.vx - 2 * dotProduct * normalX;
-                        ball.vy = ball.vy - 2 * dotProduct * normalY;
-
-                        // Add some damping and randomness
-                        ball.vx *= 0.9;
-                        ball.vy *= 0.9;
+                        ball.vx = (ball.vx - 2 * dotProduct * normalX) * 0.7;
+                        ball.vy = (ball.vy - 2 * dotProduct * normalY) * 0.7;
                     }
 
-                    // Add random jitter to simulate tumbling
-                    ball.vx += (Math.random() - 0.5) * 0.5;
-                    ball.vy += (Math.random() - 0.5) * 0.5;
+                    // Less friction - balls are lighter and being blown by air
+                    ball.vx *= 0.96;
+                    ball.vy *= 0.96;
 
-                    // Apply friction
-                    ball.vx *= 0.98;
-                    ball.vy *= 0.98;
-
-                    // Limit max velocity
-                    const maxVel = 5;
+                    // Limit max velocity (lighter balls, more erratic)
+                    const maxVel = 6;
                     const vel = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
                     if (vel > maxVel) {
                         ball.vx = (ball.vx / vel) * maxVel;
@@ -116,12 +118,13 @@ class BingoCage {
                     ball.element.style.left = ball.x + 'px';
                     ball.element.style.top = ball.y + 'px';
 
-                    // Add rotation effect
-                    const rotation = (elapsed / 10) % 360;
-                    ball.element.style.transform = `rotate(${rotation}deg)`;
+                    // Add rotation effect based on velocity
+                    if (!ball.rotation) ball.rotation = 0;
+                    ball.rotation += vel * 2;
+                    ball.element.style.transform = `rotate(${ball.rotation}deg)`;
                 });
 
-                // Check for collisions between balls
+                // Check for collisions between balls (lighter, bouncier)
                 for (let i = 0; i < this.balls.length; i++) {
                     for (let j = i + 1; j < this.balls.length; j++) {
                         const ball1 = this.balls[i];
@@ -132,8 +135,8 @@ class BingoCage {
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         const minDistance = 50; // Ball diameter
 
-                        if (distance < minDistance) {
-                            // Simple elastic collision
+                        if (distance < minDistance && distance > 0) {
+                            // Light plastic ball collision
                             const angle = Math.atan2(dy, dx);
                             const sin = Math.sin(angle);
                             const cos = Math.cos(angle);
@@ -144,12 +147,13 @@ class BingoCage {
                             const vx2 = ball2.vx * cos + ball2.vy * sin;
                             const vy2 = ball2.vy * cos - ball2.vx * sin;
 
-                            // Swap velocities (elastic collision)
+                            // Swap velocities with some energy retention (plastic bounce)
+                            const restitution = 0.8;
                             const temp = vx1;
-                            ball1.vx = vx2 * cos - vy1 * sin;
-                            ball1.vy = vy1 * cos + vx2 * sin;
-                            ball2.vx = temp * cos - vy2 * sin;
-                            ball2.vy = vy2 * cos + temp * sin;
+                            ball1.vx = (vx2 * restitution) * cos - vy1 * sin;
+                            ball1.vy = vy1 * cos + (vx2 * restitution) * sin;
+                            ball2.vx = (temp * restitution) * cos - vy2 * sin;
+                            ball2.vy = vy2 * cos + (temp * restitution) * sin;
 
                             // Separate balls
                             const overlap = minDistance - distance;
@@ -220,8 +224,6 @@ class BingoCage {
             }, 1000);
         }
 
-        // Stop sphere rotation
-        this.sphereContainer.classList.remove('rotating');
     }
 
     startPicking() {
@@ -256,16 +258,8 @@ class BingoCage {
         // Create balls
         this.createBalls(min, max);
 
-        // Start sphere rotation
-        this.sphereContainer.classList.add('rotating');
-
-        // Animate balls for 6 seconds
+        // Animate balls for 6 seconds (sphere stays still)
         this.animateBalls(6000);
-
-        // Remove rotation class after animation
-        setTimeout(() => {
-            this.sphereContainer.classList.remove('rotating');
-        }, 6000);
     }
 }
 
